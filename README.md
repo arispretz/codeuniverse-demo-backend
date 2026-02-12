@@ -7,9 +7,9 @@ Provides APIs for project management, the integrated code editor, the audited te
 
 ## 🔗 Associated Repositories
 
-- [Frontend (codeuniverse)](https://github.com/arispretz/codeuniverse.git)
-- [AI Assistant (codeuniverse-demo-ai_assistant)](https://github.com/arispretz/codeuniverse-demo-ai_assistant.git)
-- [Codeuniverse-Demo (codeuniverse-demo)](https://github.com/arispretz/codeuniverse-demo.git)
+- [Frontend (codeuniverse-frontend)](https://github.com/arispretz/codeuniverse-frontend.git)
+- [AI Assistant (codeuniverse-ai_assistant)](https://github.com/arispretz/codeuniverse-ai_assistant.git)
+- [Codeuniverse-App (codeuniverse-app)](https://github.com/arispretz/codeuniverse-app.git)
 
 ---
 
