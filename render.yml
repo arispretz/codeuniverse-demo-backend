@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: codeuniverse-backend
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.prod
+    envVars:
+      # -----------------------------
+      # Backend - Express Config
+      # -----------------------------
+
+      # Environment
+      - key: NODE_ENV
+        sync: false
+      - key: PORT
+        sync: false
+
+      # URLs
+      - key: BACKEND_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: ASSISTANT_URL
+        sync: false
+      - key: ML_SERVICE_URL
+        sync: false
+
+      # Database
+      - key: MONGO_URI
+        sync: false
+      # Session / Auth
+      - key: SESSION_SECRET
+        sync: false      
+      - key: FIREBASE_CREDENTIAL_JSON
+        sync: false
+
+      # Judge0 API
+      - key: JUDGE0_URL
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
+
+      # Socket.io / CORS
+      - key: SOCKET_CORS_ORIGINS
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+      # Local Development
+      - key: LOCAL_HOSTNAME
+        sync: false
+      - key: LOCAL_IP
+        sync: false
+
+      # Company / Seed User
+      - key: COMPANY_DOMAIN
+        sync: false
+      - key: SEED_USER_PASSWORD
+        sync: false

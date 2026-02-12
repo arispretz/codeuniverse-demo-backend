@@ -1,0 +1,35 @@
+# @fileoverview Dockerfile for Node.js application (development).
+# Builds a lightweight container with necessary dependencies for node-gyp and binary compilation.
+# Exposes port 4000 and runs the application using server.js.
+
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install required dependencies for node-gyp and basic utilities
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    coreutils \
+    && ln -sf python3 /usr/bin/python \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy dependency manifests
+COPY package*.json ./
+
+# Install dependencies (development mode, allows updates)
+RUN npm install --legacy-peer-deps
+
+# Copy application source code
+COPY . .
+
+# Expose application port
+EXPOSE 4000
+
+# 👇 Environment Variables
+ENV NODE_ENV=development
+ENV PORT=4000
+
+# Start application
+CMD ["node", "server.js"]
