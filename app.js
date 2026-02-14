@@ -8,6 +8,7 @@ import express from 'express';
 import session from 'express-session';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import MongoStore from "connect-mongo";
 
 import { checkRole } from './middleware/checkRole.js';
 import { auth } from './middleware/authMiddleware.js';
@@ -42,17 +43,24 @@ if (!process.env.SESSION_SECRET) {
   throw new Error("❌ SESSION_SECRET environment variable is not defined. Please set it in your .env file.");
 }
 
-app.use(session({
+const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    maxAge: 1000 * 60 * 60 * 24 // 1 day
-  }
-}));
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24,
+  },
+};
+
+if (process.env.NODE_ENV === "production") {
+  sessionConfig.store = MongoStore.create({ mongoUrl: process.env.MONGO_URI });
+}
+
+app.use(session(sessionConfig));
+
 
 /**
  * Security middleware (CORS, CSP, etc.)
