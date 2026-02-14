@@ -28,6 +28,7 @@ import { userProfileRouter } from './routes/userProfileRoutes.js';
 import { avatarRouter } from './routes/avatarRoutes.js';
 import { securityMiddleware } from './security.js';
 
+import { autocompleteRouter } from './routes/autocompleteRoutes.js';
 import { globalErrorHandler } from './middleware/errorHandlers.js';
 import { registerRouter } from './routes/registerRoutes.js';
 
@@ -116,6 +117,7 @@ app.use('/api', auth);
  * API routes
  */
 app.use('/api', registerRouter); 
+app.use('/api', autocompleteRouter); 
 app.use('/api', userProfileRouter);
 app.use('/api/code', codeRouter);
 app.use('/api', lintRouter);
