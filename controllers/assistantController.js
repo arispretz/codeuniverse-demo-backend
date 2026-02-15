@@ -4,55 +4,28 @@
  * @module controllers/assistantController
  */
 
-import { runFastapiModel } from '../services/fastapiModelRunner.js';
+import { runFastapiReply } from "../services/fastapiModelRunner.js";
 
-/**
- * Handles POST /assistant.
- * Calls FastAPI model to generate assistant reply based on provided input.
- *
- * @async
- * @function generateAssistantReply
- * @param {Request} req - Express request object containing prompt and metadata.
- * @param {Response} res - Express response object used to send results.
- * @returns {Promise<void>} Sends JSON response with assistant reply or error message.
- */
 export const generateAssistantReply = async (req, res) => {
-  const { prompt, language, user_id, code, user_level } = req.body;
+  const { prompt, language, code, user_id, user_level } = req.body;
 
-  // ✅ Required field validation
-  if (!prompt || !language || !user_id) {
-    return res.status(400).json({ error: 'Missing required fields: prompt, language, user_id' });
+  if (!prompt || !language) {
+    return res.status(400).json({ output: "error: Missing required fields: prompt, language" });
   }
 
   try {
-    /**
-     * 🔗 Call FastAPI service with all provided fields.
-     */
-    const response = await runFastapiModel({
+    const response = await runFastapiReply({
       prompt,
       language,
       code,
       user_id,
       user_level,
+      token: req.headers.authorization?.replace("Bearer ", ""),
     });
 
-    /**
-     * 📦 Always return { response } so frontend can consume consistently.
-     */
     res.json({ response });
   } catch (error) {
-    /**
-     * ❌ Log full error with stack trace.
-     */
-    console.error('❌ Error generating assistant reply:', error);
-
-    /**
-     * 🛑 Return clear error message to frontend.
-     * Include detailed error only in development mode.
-     */
-    res.status(500).json({
-      error: 'Assistant service unavailable',
-      detail: process.env.NODE_ENV === 'development' ? error.message : undefined,
-    });
+    console.error("❌ Error generating assistant reply:", error);
+    res.status(500).json({ output: `error: ${error.message}` });
   }
 };

@@ -68,91 +68,88 @@ export function setupTerminal(server) {
   });
 
   wss.on('connection', async (ws, req) => {
-    let userId = 'anon';
-    let token = null;
+  let userId = 'anon';
+  let token = null;
 
-    const protocols = req.headers['sec-websocket-protocol'];
-    if (protocols) {
-      const protoList = protocols.split(',').map((p) => p.trim());
-      token = protoList[0];
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  token = url.searchParams.get("token");
+
+  if (!token) {
+    sendText(ws, '❌ Token not received\n');
+    ws.close(1008, 'No token');
+    return;
+  }
+
+  try {
+    const decoded = await getAuth().verifyIdToken(token);
+    userId = decoded.uid;
+    console.log(`🔐 Authenticated user: ${decoded.email}`);
+  } catch {
+    sendText(ws, '❌ Invalid token\n');
+    ws.close(1008, 'Invalid token');
+    return;
+  }
+
+  sendText(
+    ws,
+    `Welcome to the secure terminal!\nAllowed commands: ls, pwd, cat, less, head, tail\nDirectory: ${SAFE_DIR}\n`
+  );
+
+  // Keepalive ping
+  const pingInterval = setInterval(() => {
+    if (ws.readyState === ws.OPEN) {
+      ws.ping();
     }
+  }, 25_000);
 
-    if (!token) {
-      sendText(ws, '❌ Token not received\n');
-      ws.close(1008, 'No token');
+  ws.on('message', async (msg) => {
+    const raw = msg.toString().trim();
+
+    if (raw === '__ping__') return;
+
+    if (raw.length > MAX_MSG_LEN) {
+      sendText(ws, '❌ Input too long\n');
       return;
     }
 
-    try {
-      const decoded = await getAuth().verifyIdToken(token);
-      userId = decoded.uid;
-      console.log(`🔐 Authenticated user: ${decoded.email}`);
-    } catch {
-      sendText(ws, '❌ Invalid token\n');
-      ws.close(1008, 'Invalid token');
+    const [command, ...args] = raw.split(/\s+/);
+
+    if (!mapCommands[command]) {
+      sendText(ws, `❌ Command not allowed: ${command}\n`);
       return;
     }
 
-    sendText(
-      ws,
-      `Welcome to the secure terminal!\nAllowed commands: ls, pwd, cat, less, head, tail\nDirectory: ${SAFE_DIR}\n`
+    const { cmd, args: baseArgs } = mapCommands[command];
+    const cleanArgs = sanitizeArgs([...baseArgs, ...args]);
+
+    const child = spawn(cmd, cleanArgs, {
+      shell: false,
+      cwd: SAFE_DIR,
+      env: process.env,
+    });
+
+    child.stdout.on('data', (d) => sendText(ws, d.toString()));
+    child.stderr.on('data', (d) => sendText(ws, `Error: ${d.toString()}`));
+    child.on('close', (code) =>
+      sendText(ws, `Process finished with exit code ${code}\n`)
     );
-
-    // Keepalive ping
-    const pingInterval = setInterval(() => {
-      if (ws.readyState === ws.OPEN) {
-        ws.ping();
-      }
-    }, 25_000);
-
-    ws.on('message', async (msg) => {
-      const raw = msg.toString().trim();
-
-      if (raw === '__ping__') return;
-
-      if (raw.length > MAX_MSG_LEN) {
-        sendText(ws, '❌ Input too long\n');
-        return;
-      }
-
-      const [command, ...args] = raw.split(/\s+/);
-
-      if (!mapCommands[command]) {
-        sendText(ws, `❌ Command not allowed: ${command}\n`);
-        return;
-      }
-
-      const { cmd, args: baseArgs } = mapCommands[command];
-      const cleanArgs = sanitizeArgs([...baseArgs, ...args]);
-
-      const child = spawn(cmd, cleanArgs, {
-        shell: false,
-        cwd: SAFE_DIR,
-        env: process.env,
-      });
-
-      child.stdout.on('data', (d) => sendText(ws, d.toString()));
-      child.stderr.on('data', (d) => sendText(ws, `Error: ${d.toString()}`));
-      child.on('close', (code) =>
-        sendText(ws, `Process finished with exit code ${code}\n`)
-      );
-    });
-
-    ws.on('close', () => {
-      clearInterval(pingInterval);
-      console.log(`🔒 Client ${userId} disconnected from audited terminal`);
-    });
-
-    ws.on('error', (err) => {
-      clearInterval(pingInterval);
-      console.error(`💥 WebSocket connection error:`, err);
-      try {
-        ws.close();
-      } catch {}
-    });
   });
 
-  console.log(
-    `🔒 Audited terminal mounted at /terminal-audit (directory: ${SAFE_DIR})`
-  );
+  ws.on('close', () => {
+    clearInterval(pingInterval);
+    console.log(`🔒 Client ${userId} disconnected from audited terminal`);
+  });
+
+  ws.on('error', (err) => {
+    clearInterval(pingInterval);
+    console.error(`💥 WebSocket connection error:`, err);
+    try {
+      ws.close();
+    } catch {}
+  });
+});
+
+console.log(
+  `🔒 Audited terminal mounted at /terminal-audit (directory: ${SAFE_DIR})`
+);
 }

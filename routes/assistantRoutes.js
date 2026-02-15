@@ -4,15 +4,33 @@
  * @module routes/assistantRoutes
  */
 
-import express from 'express';
-import { generateAssistantReply } from '../controllers/assistantController.js';
+import express from "express";
+import { generateAssistantReply } from "../controllers/assistantController.js";
+import { generateCode } from "../controllers/generateController.js";
+import { generateAutocomplete } from "../controllers/autocompleteController.js";
 
 export const assistantRouter = express.Router();
 
 /**
- * POST /assistant
- * Endpoint to generate assistant reply using FastAPI model.
- * The frontend (AssistantSidebar) sends { prompt, code, language, user_id, user_level }
+ * POST /assistant/reply
+ * Endpoint to generate assistant reply (mentor mode).
+ * The frontend sends { prompt, code, language, user_level }
  * The backend responds with { response }
  */
-assistantRouter.post('/assistant', generateAssistantReply);
+assistantRouter.post("/reply", generateAssistantReply);
+
+/**
+ * POST /assistant/generate
+ * Endpoint to generate code using FastAPI.
+ * The frontend sends { prompt, language }
+ * The backend responds with { code }
+ */
+assistantRouter.post("/generate", generateCode);
+
+/**
+ * POST /assistant/autocomplete
+ * Endpoint to generate code autocomplete suggestions using FastAPI.
+ * The frontend sends { code, language }
+ * The backend responds with { suggestion }
+ */
+assistantRouter.post("/autocomplete", generateAutocomplete);
