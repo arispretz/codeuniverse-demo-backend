@@ -45,3 +45,12 @@ export async function runFastapiAutocomplete({ code, language, token }) {
   );
   return data.suggestion;
 }
+
+export async function runFastapiReplyCodeOnly({ prompt, language, code, user_id, token }) {
+  const { data } = await axios.post(
+    `${process.env.ML_SERVICE_URL}/reply-code-only`,
+    { prompt, language, code, user_id },
+    { headers: { Authorization: `Bearer ${token}` }, timeout: 30000 }
+  );
+  return data.code;
+}
