@@ -5,7 +5,7 @@
 import { Server } from "socket.io";
 import { getAuth } from "firebase-admin/auth";
 import { User } from "./models/User.js";
-import { runFastapiModel } from "./services/fastapiModelRunner.js";
+import { runFastapiModel } from "../services/fastapiModelRunner.js";
 
 const corsOriginsEnv = process.env.SOCKET_CORS_ORIGINS;
 if (!corsOriginsEnv) {
