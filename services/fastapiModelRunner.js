@@ -15,9 +15,6 @@ if (!process.env.ML_SERVICE_URL) {
  */
 async function callFastAPI(endpoint, payload, token) {
   const url = `${process.env.ML_SERVICE_URL}${endpoint}`;
-  console.log("➡️ Calling FastAPI:", url);
-  console.log("➡️ Payload:", payload);
-  console.log("➡️ Token:", token ? token.substring(0, 20) + "..." : "❌ No token");
 
   try {
     const { data } = await axios.post(url, payload, {
