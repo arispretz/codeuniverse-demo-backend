@@ -14,7 +14,6 @@ if (!process.env.ML_SERVICE_URL) {
  * Helper to log and handle errors
  */
 async function callFastAPI(endpoint, payload, token) {
-  // ✅ Siempre añadimos /api/assistant al prefijo
   const url = `${process.env.ML_SERVICE_URL}/api/assistant${endpoint}`;
 
   try {
