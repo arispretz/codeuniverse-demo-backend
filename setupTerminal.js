@@ -137,7 +137,6 @@ export function setupTerminal(server) {
 
   ws.on('close', () => {
     clearInterval(pingInterval);
-    console.log(`🔒 Client ${userId} disconnected from audited terminal`);
   });
 
   ws.on('error', (err) => {

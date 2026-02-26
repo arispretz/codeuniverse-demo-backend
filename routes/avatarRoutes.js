@@ -5,7 +5,8 @@
  */
 
 import express from "express";
-import { verifyFirebaseToken, getAvatars } from "../controllers/avatarController.js";
+import { auth } from "../middleware/authMiddleware.js";
+import { getAvatars } from "../controllers/avatarController.js";
 
 export const avatarRouter = express.Router();
 
@@ -14,4 +15,5 @@ export const avatarRouter = express.Router();
  * Protected route to retrieve available avatars.
  * Requires Firebase token verification before accessing the resource.
  */
-avatarRouter.get("/", verifyFirebaseToken, getAvatars);
+
+avatarRouter.get("/", auth, getAvatars);

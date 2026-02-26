@@ -19,10 +19,7 @@ import { User } from '../models/User.js';
  * @returns {Promise<void>} Calls next() if authentication succeeds, otherwise sends error response.
  */
 export async function auth(req, res, next) {
-  console.log('🔐 Auth middleware triggered');
-
   const authHeader = req.headers.authorization;
-  console.log('📥 Authorization header:', authHeader);
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     console.warn('⚠️ Request without token:', req.method, req.path);
@@ -36,8 +33,6 @@ export async function auth(req, res, next) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { uid, email } = decodedToken;
 
-    console.log('🧾 Decoded token:', decodedToken);
-
     if (!uid || !email) {
       console.warn('⚠️ UID or email missing in decoded token');
       return res.status(400).json({ error: 'Invalid token: UID or email not found' });
@@ -50,12 +45,10 @@ export async function auth(req, res, next) {
       const existingUser = await User.findOne({ email });
 
       if (existingUser) {
-        console.log('🔄 Updating existing user with new firebaseUid');
         existingUser.firebaseUid = uid;
         await existingUser.save();
         user = existingUser;
       } else {
-        console.log('🆕 Creating new guest user');
         user = await User.create({
           firebaseUid: uid,
           email,
@@ -74,7 +67,6 @@ export async function auth(req, res, next) {
       role: user.role,
     };
 
-    console.log(`✅ Authenticated user: ${user.email} (${user.role})`);
     next();
   } catch (error) {
     console.error('❌ Token verification failed:', error.message);

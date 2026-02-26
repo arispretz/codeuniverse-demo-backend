@@ -11,7 +11,7 @@ export const projectSchema = new mongoose.Schema(
     name: { type: String, required: true },
     description: { type: String },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    createdByFirebase: { type: String }, // opcional, para integración con Firebase UID
+    createdByFirebase: { type: String }, 
     repoUrl: { type: String },
 
     members: {

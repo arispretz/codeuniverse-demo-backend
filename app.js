@@ -23,12 +23,11 @@ import { taskRouter } from './routes/taskRoutes.js';
 import { projectRouter } from './routes/projectRoutes.js';
 
 import { userRouter } from './routes/userRoutes.js';
-import { roleRouter } from './routes/roleRoutes.js';
 import { userProfileRouter } from './routes/userProfileRoutes.js';
 import { avatarRouter } from './routes/avatarRoutes.js';
 import { securityMiddleware } from './security.js';
-
 import { globalErrorHandler } from './middleware/errorHandlers.js';
+
 import { registerRouter } from './routes/registerRoutes.js';
 
 dotenv.config();
@@ -124,7 +123,6 @@ app.use('/api/project-files', projectFilesRouter);
 app.use('/api', taskRouter);
 app.use('/api', projectRouter);
 app.use('/api/users', userRouter);
-app.use('/api', roleRouter);
 app.use('/api/avatars', avatarRouter);
 
 app.use('/docs', (req, res) => {

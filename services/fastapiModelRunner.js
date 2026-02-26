@@ -21,7 +21,6 @@ async function callFastAPI(endpoint, payload, token) {
       headers: { Authorization: `Bearer ${token}` },
       timeout: 240000, 
     });
-    console.log("✅ FastAPI response:", data);
     return data;
   } catch (error) {
     console.error("❌ FastAPI error:", error.response?.data || error.message);

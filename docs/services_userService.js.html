@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: schemas/taskSchema</title>
+    <title>JSDoc: Source: services/userService.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,322 +17,83 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: schemas/taskSchema</h1>
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Mongoose schema definition for Tasks.Represents a task entity within a project, including metadata such as status, priority, assignees, comments, and history.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".taskSchema"><span class="type-signature">(static, constant) </span>taskSchema<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Task schema.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line37">line 37</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="~CommentSchema"><span class="type-signature">(inner, constant) </span>CommentSchema<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Comment sub-schema.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="~HistorySchema"><span class="type-signature">(inner, constant) </span>HistorySchema<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    History sub-schema.Tracks changes made to a task.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line13">line 13</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">Source: services/userService.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview User service for role management.
+ * Provides functionality to update a user's role in MongoDB.
+ * Ensures that only admins can change roles, prevents self-demotion from admin,
+ * validates roles against a whitelist, and emits a role change event if applicable.
+ *
+ * @module services/userService
+ */
+
+import { User } from '../models/User.js';
+
+/**
+ * Updates the role of a user in MongoDB.
+ *
+ * @async
+ * @function updateUserRole
+ * @param {Object} requester - The user making the request.
+ * @param {string} requester.role - Role of the requester (must be 'admin').
+ * @param {string} requester.firebaseUid - Firebase UID of the requester.
+ * @param {string} targetUid - Firebase UID of the user whose role will be updated.
+ * @param {string} newRole - The new role to assign to the user.
+ * @returns {Promise&lt;{user: Object, roleChanged: boolean}>} 
+ * Returns the updated user object and a flag indicating if the role was changed.
+ *
+ * @throws {Error} If requester is not admin, if attempting self-demotion,
+ * if the role is invalid, or if the user is not found.
+ *
+ * @example
+ * const result = await updateUserRole(req.user, 'targetFirebaseUid', 'developer');
+ * console.log(result.user.role); // 'developer'
+ */
+export const updateUserRole = async (requester, targetUid, newRole) => {
+  // 🚫 Ensure requester is admin
+  if (requester.role !== 'admin') {
+    throw new Error('Only admins can change roles');
+  }
+
+  // 🚫 Prevent self-demotion from admin
+  if (requester.firebaseUid === targetUid &amp;&amp; newRole.toLowerCase() !== 'admin') {
+    throw new Error('You cannot remove your own admin role');
+  }
+
+  // ✅ Validate role against allowed roles
+  const validRoles = ['admin', 'manager', 'developer', 'guest', 'ai_assistant'];
+  if (!validRoles.includes(newRole.toLowerCase())) {
+    throw new Error(`Invalid role: ${newRole}`);
+  }
+
+  // 🔍 Find user by Firebase UID
+  const user = await User.findOne({ firebaseUid: targetUid });
+  if (!user) throw new Error('User not found');
+
+  const previousRole = user.role;
+
+  // 📝 Update role in MongoDB
+  user.role = newRole.toLowerCase();
+  await user.save();
+
+  // 📢 Return updated user and flag if role changed
+  if (previousRole !== newRole.toLowerCase()) {
+    return { user, roleChanged: true };
+  }
+
+  return { user, roleChanged: false };
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

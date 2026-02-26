@@ -36,7 +36,6 @@ export async function firebaseAuthMiddleware(req, res, next) {
     }
 
     const decodedToken = await admin.auth().verifyIdToken(token);
-    console.info(`✅ Authenticated user: ${decodedToken.email} (${decodedToken.uid})`);
     req.user = decodedToken;
     return next();
   } catch (error) {

@@ -55,9 +55,7 @@ async function startServer() {
     await connectDB();
 
     server.listen(PORT, '0.0.0.0', () => {
-      console.log(`✅ Backend running at http://localhost:${PORT}`);
-      console.log(`📡 Socket.IO available at ws://localhost:${PORT}/socket.io/`);
-      console.log(`🔒 Audited terminal available at ws://localhost:${PORT}/terminal-audit`);
+      console.log(`🚀 Server is running on port ${PORT}`);
     });
   } catch (err) {
     console.error('❌ Failed to connect to MongoDB Atlas:', err);

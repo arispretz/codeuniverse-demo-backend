@@ -44,5 +44,5 @@ export const allowedOrigins = [
   'http://127.0.0.1:5173',   // Loopback alternative
   'http://localhost',        // Nginx serving on port 80
   'http://172.29.207.231:5173',
-  'https://arispretz-codeuniverse-onrender.com',
+  'https://codeuniverse-backend.onrender.com',
 ].filter(Boolean);

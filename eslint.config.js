@@ -18,7 +18,6 @@ export default [
       },
     },
     plugins: {
-      // Add ESLint plugins here if needed
     },
     rules: {
       'no-unused-vars': 'warn',

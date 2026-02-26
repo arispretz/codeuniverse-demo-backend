@@ -1,38 +1,64 @@
-import { User } from '../models/User.js';
+/**
+ * @fileoverview Role Controller
+ * Provides endpoints to assign and update user roles in MongoDB.
+ * Delegates business logic to the userService and handles HTTP responses.
+ * Emits a role change event via Socket.IO when applicable.
+ *
+ * @module controllers/roleController
+ */
 
-const validRoles = ['admin', 'manager', 'developer', 'guest', 'ai_assistant'];
-
-const assignRole = async (user, role) => {
-  user.role = role;
-  await user.save();
-  return user;
-};
+import { updateUserRole } from '../services/userService.js';
 
 /**
- * Handles PATCH /api/users/:firebaseUid/role.
- * Assigns a role to a MongoDB user.
+ * Assigns a role to a user in MongoDB.
+ *
+ * @async
+ * @function assignRole
+ * @param {Request} req - Express request object.
+ * @param {Object} req.params - Route parameters.
+ * @param {string} req.params.firebaseUid - Firebase UID of the target user.
+ * @param {Object} req.body - Request body.
+ * @param {string} req.body.role - New role to assign to the user.
+ * @param {Object} req.user - Authenticated user making the request.
+ * @param {string} req.user.role - Role of the requester (must be 'admin').
+ * @param {string} req.user.firebaseUid - Firebase UID of the requester.
+ * @param {Object} req.io - Optional Socket.IO instance for emitting events.
+ * @param {Response} res - Express response object used to send results.
+ * @returns {Promise<void>} Sends JSON response with updated user data or error message.
+ *
+ * @throws {Error} If requester is not admin, role is invalid, or user not found.
+ *
+ * @example
+ * // PATCH /api/users/:firebaseUid/role
+ * {
+ *   "role": "developer"
+ * }
+ *
+ * Response:
+ * {
+ *   "message": "Role developer assigned to user abc123",
+ *   "user": {
+ *     "firebaseUid": "abc123",
+ *     "email": "user@example.com",
+ *     "role": "developer"
+ *   }
+ * }
  */
-export const updateUserRole = async (req, res) => {
+export const updateUserRoleController = async (req, res) => { 
   try {
-    const callerRole = req.user?.role;
-    if (callerRole !== 'admin') {
-      return res.status(403).json({ error: 'Only admins can change roles' });
-    }
-
     const { firebaseUid } = req.params;
     const { role } = req.body;
+    const result = await updateUserRole(req.user, firebaseUid, role);
 
-    if (!validRoles.includes(role)) {
-      return res.status(400).json({ error: 'Invalid role' });
+    if (result.roleChanged) {
+      req.io?.emit('roleChanged', { uid: firebaseUid, newRole: role });
     }
 
-    const user = await User.findOne({ firebaseUid });
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
-    const updatedUser = await assignRole(user, role);
-    res.json({ message: `Role ${role} assigned to user ${firebaseUid}`, user: updatedUser });
+    res.json({
+      message: `Role ${role} assigned to user ${firebaseUid}`,
+      user: result.user,
+    });
   } catch (error) {
-    console.error('❌ Error assigning role:', error);
-    res.status(500).json({ error: 'Internal error while assigning role' });
+    res.status(400).json({ error: error.message });
   }
 };

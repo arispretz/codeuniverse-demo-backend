@@ -62,7 +62,7 @@ export const getProjectFileById = async (req, res) => {
   try {
     const file = await ProjectFile.findById(req.params.id);
     if (!file) return res.status(404).json({ error: 'File not found' });
-    res.json(file);
+      res.json(file);
   } catch (error) {
     console.error('❌ Error retrieving file:', error);
     res.status(404).json({ error: 'File not found' });
@@ -86,7 +86,7 @@ export const updateProjectFile = async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!updated) return res.status(404).json({ error: 'File not found' });
-    res.json(updated);
+      res.json(updated);
   } catch (error) {
     if (error.code === 11000) {
       return res.status(409).json({ error: 'A node with that name already exists in this folder' });
@@ -108,7 +108,7 @@ export const deleteProjectFile = async (req, res) => {
   try {
     const deleted = await ProjectFile.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'File not found' });
-    res.json({ success: true });
+      res.json({ success: true });
   } catch (error) {
     console.error('❌ Error deleting file/folder:', error);
     res.status(400).json({ error: 'Error deleting file/folder' });

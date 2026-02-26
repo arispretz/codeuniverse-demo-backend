@@ -19,5 +19,5 @@ export function assignRole(email, invitationCode) {
 
   if (invitationCode) return 'dev';
   if (email.endsWith('@yourcompany.com')) return 'admin';
-  return 'viewer';
+  return 'guest';
 }

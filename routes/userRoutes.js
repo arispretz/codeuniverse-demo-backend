@@ -7,7 +7,7 @@
 import express from 'express';
 import { auth } from '../middleware/authMiddleware.js';
 import { registerUser, getCurrentUser, getUsers, getPublicUsers, updateUserTeam } from '../controllers/userController.js';
-import { updateUserRole } from '../controllers/roleController.js';
+import { updateUserRoleController } from '../controllers/roleController.js';
 import { syncUser } from '../controllers/user/syncUser.js';
 import { syncUserToMongo } from '../controllers/user/syncUserToMongo.js';
 
@@ -65,7 +65,7 @@ userRouter.get('/admin', auth, getUsers);
  * Route to update a user's role.
  * Requires authentication.
  */
-userRouter.patch('/:firebaseUid/role', auth, updateUserRole);
+userRouter.patch('/:firebaseUid/role', auth, updateUserRoleController);
 
 /**
  * PATCH /users/:firebaseUid/team

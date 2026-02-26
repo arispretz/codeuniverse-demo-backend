@@ -1,5 +1,5 @@
 /**
- * @fileoverview Middleware to ensure a Firebase-authenticated user is synchronized with MongoDB.
+ * @fileoverview Function to ensure a Firebase-authenticated user is synchronized with MongoDB.
  * If the user does not exist, a new record is created with a default role.
  * @module controllers/user/syncUserToMongo
  */

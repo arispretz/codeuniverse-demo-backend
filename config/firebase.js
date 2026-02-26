@@ -19,7 +19,6 @@ try {
    * @type {object}
    */
   firebaseCredentials = JSON.parse(process.env.FIREBASE_CREDENTIAL_JSON);
-  console.log('✅ Firebase credentials loaded from environment variable');
 } catch (error) {
   console.error('❌ Failed to parse Firebase credentials:', error.message);
   process.exit(1);
@@ -32,7 +31,6 @@ try {
   admin.initializeApp({
     credential: admin.credential.cert(firebaseCredentials),
   });
-  console.log('🔐 Firebase Admin SDK initialized successfully');
 } catch (error) {
   console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
   process.exit(1);

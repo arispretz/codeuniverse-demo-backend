@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: schemas/taskSchema</title>
+    <title>JSDoc: Module: services/userService</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: schemas/taskSchema</h1>
+    <h1 class="page-title">Module: services/userService</h1>
 
     
 
@@ -38,7 +38,10 @@
     <div class="container-overview">
     
         
-            <div class="description">Mongoose schema definition for Tasks.Represents a task entity within a project, including metadata such as status, priority, assignees, comments, and history.</div>
+            <div class="description">User service for role management.
+Provides functionality to update a user's role in MongoDB.
+Ensures that only admins can change roles, prevents self-demotion from admin,
+validates roles against a whitelist, and emits a role change event if applicable.</div>
         
 
         
@@ -87,7 +90,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line1">line 1</a>
+        <a href="services_userService.js.html">services/userService.js</a>, <a href="services_userService.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -134,19 +137,200 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
             
-<h4 class="name" id=".taskSchema"><span class="type-signature">(static, constant) </span>taskSchema<span class="type-signature"></span></h4>
 
+    
+
+    
+    <h4 class="name" id="~updateUserRole"><span class="type-signature">(async, inner) </span>updateUserRole<span class="signature">(requester, targetUid, newRole)</span><span class="type-signature"> &rarr; {Promise.&lt;{user: Object, roleChanged: boolean}>}</span></h4>
+    
+
+    
 
 
 
 <div class="description">
-    Task schema.
+    Updates the role of a user in MongoDB.
 </div>
 
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>requester</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user making the request.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>role</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Role of the requester (must be 'admin').</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>firebaseUid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Firebase UID of the requester.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetUid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Firebase UID of the user whose role will be updated.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newRole</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new role to assign to the user.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -182,7 +366,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line37">line 37</a>
+        <a href="services_userService.js.html">services/userService.js</a>, <a href="services_userService.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -198,133 +382,79 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
         
-            
-<h4 class="name" id="~CommentSchema"><span class="type-signature">(inner, constant) </span>CommentSchema<span class="type-signature"></span></h4>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        If requester is not admin, if attempting self-demotion,
+if the role is invalid, or if the user is not found.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
 
 
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
 
 
-<div class="description">
-    Comment sub-schema.
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Returns the updated user object and a flag indicating if the role was changed.
 </div>
 
 
 
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;{user: Object, roleChanged: boolean}></span>
 
 
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
+    </dd>
 </dl>
 
+    
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const result = await updateUserRole(req.user, 'targetFirebaseUid', 'developer');
+console.log(result.user.role); // 'developer'</code></pre>
 
 
 
         
-            
-<h4 class="name" id="~HistorySchema"><span class="type-signature">(inner, constant) </span>HistorySchema<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    History sub-schema.Tracks changes made to a task.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schemas_taskSchema.js.html">schemas/taskSchema.js</a>, <a href="schemas_taskSchema.js.html#line13">line 13</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
-
     
 
     
